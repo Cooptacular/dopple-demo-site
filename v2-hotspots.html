@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dopple V2 Example</title>
+    <style>
+        #dopple-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+        }
+
+        #dopple-wrapper {
+            position: relative;
+            border: 1px solid #d0d3da;
+            width: 800px;
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <div id="dopple-wrapper">
+            <div id="dopple-container"></div>
+            <div id="hotspots">
+                <div data-hotspot-id="mixer-bowl-hotspot">I'm a hotspot: Machine washsafe mixing bowl.</div>
+            </div>
+        </div> 
+    </div>        
+    <script type="module">
+        // Import the Dopple scripts so everything will work (need to update the generated SDK to reference "latest, not release")
+        import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@latest/dopple-sdk.js";
+        
+        // Initialize a new Dopple instance
+        const dopple = new DoppleXR({
+            container: document.querySelector("#dopple-container"), // Pass your container element here
+            selection: {},
+            productVersion: "4",
+            owner: "dopple",
+            workspace: "ProductValidation",
+            projectName: "bc-test-project-5-7",
+        });
+        
+        // Optional: add it to the global window object, so you can inspect it from your dev tools console more easily
+        window.dopple = dopple
+
+        // Load the 3D product
+        await dopple.load()
+
+        // Make it so that the canvas and product will resize with its container instead of blowing up
+        dopple.resize({ trackParentSize: true })
+
+        // Begin running the render loop
+        dopple.run()
+    
+        // Assign hotspot to its corresponding <div> in the DOM
+        const hotspotElements = document.querySelectorAll("#hotspots div");
+        console.log(hotspotElements);
+        hotspotElements.forEach((el) => {
+            const hotspotId = el.dataset.hotspotId;
+            console.log(dopple.matrix.hotspots[hotspotId].element);
+            dopple.matrix.hotspots[hotspotId].element = el; 
+            console.log(dopple.matrix.hotspots[hotspotId].element);
+        });
+    </script>
+</body>
+
+</html>

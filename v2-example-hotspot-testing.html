@@ -29,13 +29,21 @@
         .action-buttons {
             margin-block: 1rem;
         }
+        #dopple-wrapper {
+            position: relative;
+        }
     </style>
 </head>
 
 <body>
     <div class="content">
-        <div id="dopple-container"></div>
-        <div class="action-buttons">
+       <div id="dopple-wrapper">
+            <div id="dopple-container"></div>
+            <div id="hotspots">
+                <div data-hotspot-id="mixer-bowl-hotspot">Machine washsafe mixing bowl.</div>
+            </div>
+        </div> 
+            <div class="action-buttons">
             <button id="snapshot-button">Take Snapshot</button>
             <button id="ar-button">View in AR</button>
         </div>
@@ -50,22 +58,18 @@
                 <option value="Tropical Ceramic">Tropical Ceramic</option>
         </select>
         <br />
-        <label for="Hotspots">Hotspots</label>
-        <select id="Hotspots">
+        <!-- <label for="Hotspots">Hotspots</label> -->
+        <!-- <select id="Hotspots">
             <option value="Bowl">Bowl</option>
                 <option value="HotspotOff">HotspotOff</option>
-        </select>
+        </select> -->
         <br/>
-        <!-- Hotspots
-        <div id="hotspots">
-            <div data-hotspot-id="mixer-bowl-hotspot">Machinewash-safe mixing bowl.</div>
-            <div data-hotspot-id="bar">You can show any HTML in them.</div>
-                <div data-hotspot-id="baz">The possibilities are endless.</div> -->
-        </div>
+        
     </div>
     <script type="module">
-        // Import the Dopple scripts so everything will work
+        // Import the Dopple scripts so everything will work (need to update the generated SDK to reference "latest, not ")
         import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@latest/dopple-sdk.js";
+        console.log(DoppleXR);
 
         const sessionId = window.crypto.randomUUID();
 
@@ -126,13 +130,14 @@
         const dopple = new DoppleXR({
             container: document.querySelector("#dopple-container"), // Pass your container element here
             selection: {},
-            productVersion: "3",
+            productVersion: "4",
             owner: "dopple",
             workspace: "ProductValidation",
             projectName: "bc-test-project-5-7",
             logNamespace: "sdk",
             sessionId,
         });
+        console.log(dopple);
 
         // Optional: add it to the global window object, so you can inspect it from your dev tools console more easily
         window.dopple = dopple
@@ -145,6 +150,9 @@
 
         // Begin running the render loop
         dopple.run()
+        
+        // tested adding the enable hotspots function as part of troubleshooting
+        dopple.enableHotspots()
 
         // Add a "grab" cursor to each camera control div (in case multiple Dopple products are on a page)
         const canvasControls = document.querySelectorAll('[data-camera-controls-version]')
@@ -188,9 +196,12 @@
         })
         // Assign hotspot to its corresponding <div> in the DOM
         const hotspotElements = document.querySelectorAll("#hotspots div");
+        console.log(hotspotElements);
         hotspotElements.forEach((el) => {
             const hotspotId = el.dataset.hotspotId;
-            dopple.matrix.hotspots[hotspotId].element = el;
+            console.log(dopple.matrix.hotspots[hotspotId].element);
+            dopple.matrix.hotspots[hotspotId].element = el; 
+            console.log(dopple.matrix.hotspots[hotspotId].element);
         });
     </script>
 </body>

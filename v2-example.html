@@ -38,6 +38,12 @@
                 <button id="ar-button">View in AR</button>
             </div>
             <div id="qr-container"></div>
+            <!-- Hotspots -->
+            <div id="hotspots">
+                <div data-hotspot-id="mixer-bowl-hotspot">Machinewash-safe mixing bowl.</div>
+                <!--<div data-hotspot-id="bar">You can show any HTML in them.</div>
+                <div data-hotspot-id="baz">The possibilities are endless.</div> -->
+            </div>
         </div>
         <script type="module">
             // Import the Dopple scripts so everything will work
@@ -101,7 +107,7 @@
                 container: document.getElementById('dopple-container'),
                 owner: 'dopple',
                 workspace: 'ProductValidation',
-                projectName: 'GE-Refrigerator2',
+                projectName: 'bc-test-project-5-7',
                 productVersion: '2',
                 selection: {}
             })
@@ -158,6 +164,12 @@
                 //     }
                 // })
             })
+            // Assign hotspot to its corresponding <div> in the DOM
+            const hotspotElements = document.querySelectorAll("#hotspots div");
+            hotspotElements.forEach((el) => {
+                const hotspotId = el.dataset.hotspotId;
+                dopple.matrix.hotspots[hotspotId].element = el;
+            });
         </script>
     </body>
 </html>

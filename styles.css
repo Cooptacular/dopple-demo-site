@@ -82,3 +82,13 @@ p {
 .dopple-logo {
   width: 100px;
 }
+
+#hs-web-interactives-bottom-anchor,
+#hs-web-interactives-bottom-anchor *,
+#hs_remove_cookie_button {
+    display: none;
+}
+
+.hs-sprocket {
+  display: none;
+}

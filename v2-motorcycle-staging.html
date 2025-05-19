@@ -40,20 +40,113 @@
             <button id="ar-button">View in AR</button>
         </div>
         <div id="qr-container"></div>
-        <label for="Bowl Style">Bowl Style</label>
-        <select id="Bowl Style">
-            <option value="Stainless Steel">Stainless Steel</option>
-            <option value="White Painted Steel">White Painted Steel</option>
-            <option value="Black Ceramic">Black Ceramic</option>
-            <option value="Striped Ceramic">Striped Ceramic</option>
-            <option value="Floral Ceramic">Floral Ceramic</option>
-            <option value="Tropical Ceramic">Tropical Ceramic</option>
+        <label for="Handlebar Style">Handlebar Style</label>
+        <select id="Handlebar Style">
+            <option value="Relaxed">Relaxed</option>
+            <option value="Straight">Straight</option>
+        </select>
+        <br />
+        <label for="Seat Style">Seat Style</label>
+        <select id="Seat Style">
+            <option value="Standard">Standard</option>
+            <option value="Low Rider">Low Rider</option>
+        </select>
+        <br />
+        <label for="Exhaust Type">Exhaust Type</label>
+        <select id="Exhaust Type">
+            <option value="Standard">Standard</option>
+            <option value="Performance">Performance</option>
+        </select>
+        <br />
+        <label for="Wheel Type">Wheel Type</label>
+        <select id="Wheel Type">
+            <option value="Sport">Sport</option>
+            <option value="Trifork">Trifork</option>
+        </select>
+        <br />
+        <label for="Body Paint Color">Body Paint Color</label>
+        <select id="Body Paint Color">
+            <option value="Black">Black</option>
+            <option value="Nickel">Nickel</option>
+            <option value="White">White</option>
+            <option value="Red">Red</option>
+            <option value="Dark Blue">Dark Blue</option>
+        </select>
+        <br />
+        <label for="Frame Color">Frame Color</label>
+        <select id="Frame Color">
+            <option value="Black">Black</option>
+            <option value="Nickel">Nickel</option>
+            <option value="White">White</option>
+            <option value="Red">Red</option>
+            <option value="Dark Blue">Dark Blue</option>
+        </select>
+        <br />
+        <label for="Seat Color">Seat Color</label>
+        <select id="Seat Color">
+            <option value="Black">Black</option>
+            <option value="Brown">Brown</option>
+            <option value="Sand">Sand</option>
+            <option value="White">White</option>
+        </select>
+        <br />
+        <label for="Logo Style">Logo Style</label>
+        <select id="Logo Style">
+            <option value="Stripes">Stripes</option>
+            <option value="None">None</option>
+            <option value="Oval">Oval</option>
+            <option value="Two Tone">Two Tone</option>
+        </select>
+        <br />
+        <label for="Logo Color">Logo Color</label>
+        <select id="Logo Color">
+            <option value="Black">Black</option>
+            <option value="Nickel">Nickel</option>
+            <option value="White">White</option>
+            <option value="Red">Red</option>
+            <option value="Dark Blue">Dark Blue</option>
+        </select>
+        <br />
+        <label for="Add Tank Storage Bag">Add Tank Storage Bag</label>
+        <select id="Add Tank Storage Bag">
+            <option value="None">None</option>
+            <option value="Standard">Standard</option>
+        </select>
+        <br />
+        <label for="Add Panniers">Add Panniers</label>
+        <select id="Add Panniers">
+            <option value="None">None</option>
+            <option value="Hardcase">Hardcase</option>
+        </select>
+        <br />
+        <label for="Cameras">Cameras</label>
+        <select id="Cameras">
+            <option value="Default">Default</option>
+            <option value="Tank">Tank</option>
+        </select>
+        <br />
+        <label for="Rotation">Rotation</label>
+        <select id="Rotation">
+            <option value="Off">Off</option>
+            <option value="On">On</option>
+        </select>
+        <br />
+        <label for="Environment">Environment</label>
+        <select id="Environment">
+            <option value="Studio">Studio</option>
+            <option value="Beach">Beach</option>
+        </select>
+        <br />
+        <label for="Spotlight">Spotlight</label>
+        <select id="Spotlight">
+            <option value="Off">Off</option>
+            <option value="On">On</option>
         </select>
         <br />
         <label for="Hotspots">Hotspots</label>
         <select id="Hotspots">
-            <option value="Bowl">Bowl</option>
-            <option value="HotspotOff">HotspotOff</option>
+            <option value="Headlight-Hotspot-On">Headlight-Hotspot-On</option>
+            <option value="Headlight-Hotspot-Off">Headlight-Hotspot-Off</option>
         </select>
         <br />
         <!-- Hotspots
@@ -64,8 +157,10 @@
     </div>
     </div>
     <script type="module">
-        // Import the Dopple scripts so everything will work
-        import { DoppleXR } from 'https://builds.dopple.io/packages/dopple-sdk@rc/dopple-sdk.js'
+        import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@rc/dopple-sdk.js";
+
+        const sessionId = window.crypto.randomUUID();
+
 
         // Handle adding "grab" and "grabbing" cursors to the camera controls div that's above the canvas
         class CameraControlsCursor {
@@ -120,12 +215,11 @@
             }
         }
 
-        // Initialize a new Dopple instance
         // Intialize Dopple and load the product
         const dopple = new DoppleXR({
             container: document.querySelector("#dopple-container"), // Pass your container element here
             selection: {},
-            productVersion: "2",
+            productVersion: "3",
             owner: "dopple",
             workspace: "ProductValidation",
             projectName: "Motorcycle-Demo",
@@ -186,17 +280,7 @@
             //     }
             // })
         })
-        document.getElementById("Bowl Style").addEventListener("change", (e) => {
-            dopple.updateSelection({
-                "Bowl Style": e.target.value
-            });
-        });
 
-        document.getElementById("Hotspots").addEventListener("change", (e) => {
-            dopple.updateSelection({
-                "Hotspots": e.target.value
-            });
-        });
 
 
         // Assign hotspot to its corresponding <div> in the DOM

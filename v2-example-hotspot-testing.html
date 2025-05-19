@@ -1,175 +1,198 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-        />
-        <title>Dopple V2 Example</title>
-        <style>
-            *,
-            *::after,
-            *::before {
-                box-sizing: border-box;
-            }
-            .content {
-                font-family: system-ui;
-                margin: 0 auto;
-                max-width: 48rem;
-                padding: 1rem;
-            }
-            #dopple-container {
-                aspect-ratio: 4 / 3;
-                border: 1px solid #d0d3da;
-                position: relative;
-                width: 100%;
-            }
-            .action-buttons {
-                margin-block: 1rem;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="content">
-            <div id="dopple-container"></div>
-            <div class="action-buttons">
-                <button id="snapshot-button">Take Snapshot</button>
-                <button id="ar-button">View in AR</button>
-            </div>
-            <div id="qr-container"></div>
-            <!-- Hotspots -->
-            <div id="hotspots">
-                <div data-hotspot-id="mixer-bowl-hotspot">Machinewash-safe mixing bowl.</div>
-                <!--<div data-hotspot-id="bar">You can show any HTML in them.</div>
-                <div data-hotspot-id="baz">The possibilities are endless.</div> -->
-            </div>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dopple V2 Example</title>
+    <style>
+        *,
+        *::after,
+        *::before {
+            box-sizing: border-box;
+        }
+
+        .content {
+            font-family: system-ui;
+            margin: 0 auto;
+            max-width: 48rem;
+            padding: 1rem;
+        }
+
+        #dopple-container {
+            aspect-ratio: 4 / 3;
+            border: 1px solid #d0d3da;
+            position: relative;
+            width: 100%;
+        }
+
+        .action-buttons {
+            margin-block: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content">
+        <div id="dopple-container"></div>
+        <div class="action-buttons">
+            <button id="snapshot-button">Take Snapshot</button>
+            <button id="ar-button">View in AR</button>
         </div>
-        <script type="module">
-            // Import the Dopple scripts so everything will work
-            import { DoppleXR } from 'https://builds.dopple.io/packages/dopple-sdk@rc/dopple-sdk.js'
+        <div id="qr-container"></div>
+        <label for="Bowl Style">Bowl Style</label>
+        <select id="Bowl Style">
+            <option value="Stainless Steel">Stainless Steel</option>
+                <option value="White Painted Steel">White Painted Steel</option>
+                <option value="Black Ceramic">Black Ceramic</option>
+                <option value="Striped Ceramic">Striped Ceramic</option>
+                <option value="Floral Ceramic">Floral Ceramic</option>
+                <option value="Tropical Ceramic">Tropical Ceramic</option>
+        </select>
+        <br />
+        <label for="Hotspots">Hotspots</label>
+        <select id="Hotspots">
+            <option value="Bowl">Bowl</option>
+                <option value="HotspotOff">HotspotOff</option>
+        </select>
+        <br/>
+        <!-- Hotspots
+        <div id="hotspots">
+            <div data-hotspot-id="mixer-bowl-hotspot">Machinewash-safe mixing bowl.</div>
+            <div data-hotspot-id="bar">You can show any HTML in them.</div>
+                <div data-hotspot-id="baz">The possibilities are endless.</div> -->
+        </div>
+    </div>
+    <script type="module">
+        // Import the Dopple scripts so everything will work
+        import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@release/dopple-sdk.js";
 
-            // Handle adding "grab" and "grabbing" cursors to the camera controls div that's above the canvas
-            class CameraControlsCursor {
-                /* `element` could maybe be the canvas, or the <div data-camera-controls-version="whatever"> div that is also inside the Dopple container */
-                constructor(element) {
-                    this.element = element
+        const sessionId = window.crypto.randomUUID();
+
+        // Handle adding "grab" and "grabbing" cursors to the camera controls div that's above the canvas
+        class CameraControlsCursor {
+            /* `element` could maybe be the canvas, or the <div data-camera-controls-version="whatever"> div that is also inside the Dopple container */
+            constructor(element) {
+                this.element = element
+                this.isGrabbing = false
+
+                this.handlePointerDown = this.handlePointerDown.bind(this)
+                this.handlePointerUp = this.handlePointerUp.bind(this)
+                this.handlePointerLeave = this.handlePointerLeave(this)
+
+                this.element.style.cursor = 'grab'
+                this.initializeEventListeners()
+            }
+
+            initializeEventListeners() {
+                this.element.addEventListener('pointerdown', this.handlePointerDown)
+                window.addEventListener('pointerup', this.handlePointerUp)
+                window.addEventListener('pointerleave', this.handlePointerLeave)
+                this.element.addEventListener('pointerleave', this.handlePointerLeave)
+            }
+
+            handlePointerDown(e) {
+                this.isGrabbing = true
+                this.element.style.cursor = 'grabbing'
+                this.element.setPointerCapture(e.pointerId)
+            }
+
+            handlePointerUp(e) {
+                if (this.isGrabbing) {
                     this.isGrabbing = false
-
-                    this.handlePointerDown = this.handlePointerDown.bind(this)
-                    this.handlePointerUp = this.handlePointerUp.bind(this)
-                    this.handlePointerLeave = this.handlePointerLeave(this)
-
                     this.element.style.cursor = 'grab'
-                    this.initializeEventListeners()
-                }
-
-                initializeEventListeners() {
-                    this.element.addEventListener('pointerdown', this.handlePointerDown)
-                    window.addEventListener('pointerup', this.handlePointerUp)
-                    window.addEventListener('pointerleave', this.handlePointerLeave)
-                    this.element.addEventListener('pointerleave', this.handlePointerLeave)
-                }
-
-                handlePointerDown(e) {
-                    this.isGrabbing = true
-                    this.element.style.cursor = 'grabbing'
-                    this.element.setPointerCapture(e.pointerId)
-                }
-
-                handlePointerUp(e) {
-                    if (this.isGrabbing) {
-                        this.isGrabbing = false
-                        this.element.style.cursor = 'grab'
-                        if (this.element.hasPointerCapture(e.pointerId)) {
-                            this.element.releasePointerCapture(e.pointerId)
-                        }
+                    if (this.element.hasPointerCapture(e.pointerId)) {
+                        this.element.releasePointerCapture(e.pointerId)
                     }
-                }
-
-                handlePointerLeave(e) {
-                    if (!this.element.hasPointerCapture(e.pointerId)) {
-                        this.isGrabbing = false
-                        this.element.style.cursor = 'grab'
-                    }
-                }
-
-                destroy() {
-                    this.element.removeEventListener('pointerdown', this.handlePointerDown)
-                    window.removeEventListener('pointerup', this.handlePointerUp)
-                    window.removeEventListener('pointerleave', this.handlePointerLeave)
-                    this.element.removeEventListener('pointerleave', this.handlePointerLeave)
                 }
             }
 
-            // Initialize a new Dopple instance
-            const dopple = new DoppleXR({
-                container: document.getElementById('dopple-container'),
-                owner: 'dopple',
-                workspace: 'ProductValidation',
-                projectName: 'bc-test-project-5-7',
-                productVersion: '3',
-                selection: {}
-            })
-
-            // Optional: add it to the global window object, so you can inspect it from your dev tools console more easily
-            window.dopple = dopple
-
-            // Load the 3D product
-            await dopple.load()
-
-            // Make it so that the canvas and product will resize with its container instead of blowing up
-            dopple.resize({ trackParentSize: true })
-
-            // Begin running the render loop
-            dopple.run()
-
-            // Add a "grab" cursor to each camera control div (in case multiple Dopple products are on a page)
-            const canvasControls = document.querySelectorAll('[data-camera-controls-version]')
-            for (const controlDiv of canvasControls) {
-                new CameraControlsCursor(controlDiv)
-                console.log('wham bam')
+            handlePointerLeave(e) {
+                if (!this.element.hasPointerCapture(e.pointerId)) {
+                    this.isGrabbing = false
+                    this.element.style.cursor = 'grab'
+                }
             }
 
-            // Handle AR button clicks
-            document.getElementById('ar-button').addEventListener('click', async () => {
-                // Call the startAR method to try launching AR directly
-                const qrCode = await dopple.startAR()
+            destroy() {
+                this.element.removeEventListener('pointerdown', this.handlePointerDown)
+                window.removeEventListener('pointerup', this.handlePointerUp)
+                window.removeEventListener('pointerleave', this.handlePointerLeave)
+                this.element.removeEventListener('pointerleave', this.handlePointerLeave)
+            }
+        }
 
-                // If startAR launches successfully, then it'll return an empty string (which isn't truthy for this `if` statement)
-                // Otherwise, it'll return a string of image data (which is truthy) so we can display the QR code with the image data
-                if (qrCode) {
-                    const img = document.createElement('img')
-                    img.src = qrCode
-                    img.alt = 'QR code to launch Augmented Reality'
-                    document.getElementById('qr-container').appendChild(img)
-                }
-            })
+        // Initialize a new Dopple instance
+        const dopple = new DoppleXR({
+            container: document.querySelector("#dopple-container"), // Pass your container element here
+            selection: {},
+            productVersion: "3",
+            owner: "dopple",
+            workspace: "ProductValidation",
+            projectName: "bc-test-project-5-7",
+            logNamespace: "sdk",
+            sessionId,
+        });
 
-            // Handle snapshot button clicks
-            document.getElementById('snapshot-button').addEventListener('click', async () => {
-                await dopple.takeSnapshot()
+        // Optional: add it to the global window object, so you can inspect it from your dev tools console more easily
+        window.dopple = dopple
 
-                // Optional: use this one below if you want to customize any of the snapshot options
-                // await dopple.takeSnapshot({
-                //     fileName: 'my-snapshot-name',
-                //     mimeType: 'image/png',
-                //     size: {
-                //         width: 800, // pixels
-                //         height: 600 // pixels
-                //     },
-                //     imageHandler: (imageData) => {
-                // 		// Known bug: if a custom imageHandler is passed, then it shouldn't trigger a file download
-                //         console.log('imageData:', imageData)
-                //     }
-                // })
-            })
-            // Assign hotspot to its corresponding <div> in the DOM
-            const hotspotElements = document.querySelectorAll("#hotspots div");
-            hotspotElements.forEach((el) => {
-                const hotspotId = el.dataset.hotspotId;
-                dopple.matrix.hotspots[hotspotId].element = el;
-            });
-        </script>
-    </body>
+        // Load the 3D product
+        await dopple.load()
+
+        // Make it so that the canvas and product will resize with its container instead of blowing up
+        dopple.resize({ trackParentSize: true })
+
+        // Begin running the render loop
+        dopple.run()
+
+        // Add a "grab" cursor to each camera control div (in case multiple Dopple products are on a page)
+        const canvasControls = document.querySelectorAll('[data-camera-controls-version]')
+        for (const controlDiv of canvasControls) {
+            new CameraControlsCursor(controlDiv)
+            console.log('wham bam')
+        }
+
+        // Handle AR button clicks
+        document.getElementById('ar-button').addEventListener('click', async () => {
+            // Call the startAR method to try launching AR directly
+            const qrCode = await dopple.startAR()
+
+            // If startAR launches successfully, then it'll return an empty string (which isn't truthy for this `if` statement)
+            // Otherwise, it'll return a string of image data (which is truthy) so we can display the QR code with the image data
+            if (qrCode) {
+                const img = document.createElement('img')
+                img.src = qrCode
+                img.alt = 'QR code to launch Augmented Reality'
+                document.getElementById('qr-container').appendChild(img)
+            }
+        })
+
+        // Handle snapshot button clicks
+        document.getElementById('snapshot-button').addEventListener('click', async () => {
+            await dopple.takeSnapshot()
+
+            // Optional: use this one below if you want to customize any of the snapshot options
+            // await dopple.takeSnapshot({
+            //     fileName: 'my-snapshot-name',
+            //     mimeType: 'image/png',
+            //     size: {
+            //         width: 800, // pixels
+            //         height: 600 // pixels
+            //     },
+            //     imageHandler: (imageData) => {
+            // 		// Known bug: if a custom imageHandler is passed, then it shouldn't trigger a file download
+            //         console.log('imageData:', imageData)
+            //     }
+            // })
+        })
+        // Assign hotspot to its corresponding <div> in the DOM
+        const hotspotElements = document.querySelectorAll("#hotspots div");
+        hotspotElements.forEach((el) => {
+            const hotspotId = el.dataset.hotspotId;
+            dopple.matrix.hotspots[hotspotId].element = el;
+        });
+    </script>
+</body>
+
 </html>

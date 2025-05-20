@@ -40,7 +40,8 @@
        <div id="dopple-wrapper">
             <div id="dopple-container"></div>
             <div id="hotspots">
-                <div data-hotspot-id="mixer-bowl-hotspot">Machine washsafe mixing bowl.</div>
+                <div data-hotspot-id="mixer-bowl-hotspot">
+                    Machine washsafe mixing bowl.</div>
             </div>
         </div> 
             <div class="action-buttons">
@@ -199,9 +200,7 @@
         console.log(hotspotElements);
         hotspotElements.forEach((el) => {
             const hotspotId = el.dataset.hotspotId;
-            console.log(dopple.matrix.hotspots[hotspotId].element);
             dopple.matrix.hotspots[hotspotId].element = el; 
-            console.log(dopple.matrix.hotspots[hotspotId].element);
         });
 
         // Load selections to 3D Product

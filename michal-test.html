@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <script type="module">
+      import { DoppleXR } from "https://builds.dopple.io/packages/dopple-sdk@latest/dopple-sdk.js";
+      const dopple = new DoppleXR({
+        container: document.getElementById("dopple-container"),
+        owner: "dopple",
+        workspace: "ProductValidation",
+        projectName: "bc-test-project-5-7",
+        productVersion: "4",
+        selection: {}
+      });
+      await dopple.load();
+      dopple.resize({ trackParentSize: true });
+      dopple.run();
+    </script>
+    <style>
+      #dopple-container {
+        aspect-ratio: 16 / 9;
+        position: relative;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dopple-container"></div>
+  </body>
+</html> 

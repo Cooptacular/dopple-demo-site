@@ -29,22 +29,148 @@
         .action-buttons {
             margin-block: 1rem;
         }
+
         #dopple-wrapper {
             position: relative;
+        }
+
+        .hotspot input[type="checkbox"] {
+            border: 0 !important;
+            clip: rect(0, 0, 0, 0) !important;
+            height: 1px !important;
+            margin: -1px !important;
+            overflow: hidden !important;
+            padding: 0 !important;
+            position: absolute !important;
+            white-space: nowrap !important;
+            width: 1px !important;
+        }
+
+        .hotspot-dot {
+            align-items: center;
+            background: #007bee;
+            border-radius: 1rem;
+            box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.25);
+            color: #fff;
+            content: "+";
+            cursor: pointer;
+            display: flex;
+            height: 1.5rem;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.06, 0.8, 0.2, 1);
+            user-select: none;
+            width: 1.5rem;
+        }
+
+        .hotspot input[type="checkbox"]:focus-visible~.hotspot-dot,
+        .hotspot-dot:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+        }
+
+        .hotspot input[type="checkbox"]:focus-visible~.hotspot-dot {
+            outline: 4px solid rgba(0, 128, 234, 0.25);
+        }
+
+        .hotspot-dot svg {
+            fill: none;
+            height: 1.5rem;
+            stroke: currentColor;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke-width: 2;
+            width: 1.5rem;
+        }
+
+        .hotspot-content {
+            background: #fff;
+            border-radius: 0.625rem;
+            bottom: calc(100% + 1.5rem);
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.2);
+            left: 50%;
+            opacity: 0;
+            padding: 1rem;
+            pointer-events: none;
+            position: absolute;
+            transform: translate(-50%) scale(0.75);
+            transform-origin: bottom center;
+            transition: all 0.35s cubic-bezier(0.06, 0.8, 0.2, 1);
+            visibility: hidden;
+            width: 15rem;
+        }
+
+        .hotspot-content:after {
+            border: 0.5rem solid transparent;
+            border-top-color: #fff;
+            bottom: -0.875rem;
+            content: "";
+            display: block;
+            left: 50%;
+            position: absolute;
+            transform: translate(-50%);
+        }
+
+        .hotspot input[type="checkbox"]:checked~.hotspot-content {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%);
+            visibility: visible;
+        }
+
+        .hotspot input[type="checkbox"]:checked~.hotspot-dot {
+            background: #ef5493;
+        }
+
+        .hotspot-content,
+        .hotspot-content * {
+            line-height: 1.4;
+        }
+
+        .hotspot-content> :first-child {
+            margin-top: 0;
+        }
+
+        .hotspot-content> :last-child {
+            margin-bottom: 0;
+        }
+
+        .hotspot-content,
+        .hotspot-content p {
+            font-size: 0.875rem;
         }
     </style>
 </head>
 
 <body>
     <div class="content">
-       <div id="dopple-wrapper">
+        <div id="dopple-wrapper">
             <div id="dopple-container"></div>
-            <div id="hotspots">
+            
+            <div id="hotspots" class="hotspot" data-hotspot-id="mixer-bowl-hotspot">
+                <input id="hotspot-mixer-bowl-hotspot-checkbox" type="checkbox">
+                <label class="hotspot-dot" for="hotspot-ChargingPort-checkbox">
+                  <svg viewbox="0 0 24 24">
+                    <line x1="12" y1="8" x2="12" y2="16" />
+                    <line x1="8" y1="12" x2="16" y2="12" />
+                  </svg>
+                </label>
+                <div class="hotspot-content">
+                  <p>4.5 Quart Mixing Bowl</p>
+                </div>
+              </div>
+            
+            
+            
+            
+            <!-- <div id="hotspots">
                 <div data-hotspot-id="mixer-bowl-hotspot">
                     Machine washsafe mixing bowl.</div>
-            </div>
-        </div> 
-            <div class="action-buttons">
+            </div> -->
+        </div>
+        <div class="action-buttons">
             <button id="snapshot-button">Take Snapshot</button>
             <button id="ar-button">View in AR</button>
         </div>
@@ -52,11 +178,11 @@
         <label for="Bowl Style">Bowl Style</label>
         <select id="Bowl Style">
             <option value="Stainless Steel">Stainless Steel</option>
-                <option value="White Painted Steel">White Painted Steel</option>
-                <option value="Black Ceramic">Black Ceramic</option>
-                <option value="Striped Ceramic">Striped Ceramic</option>
-                <option value="Floral Ceramic">Floral Ceramic</option>
-                <option value="Tropical Ceramic">Tropical Ceramic</option>
+            <option value="White Painted Steel">White Painted Steel</option>
+            <option value="Black Ceramic">Black Ceramic</option>
+            <option value="Striped Ceramic">Striped Ceramic</option>
+            <option value="Floral Ceramic">Floral Ceramic</option>
+            <option value="Tropical Ceramic">Tropical Ceramic</option>
         </select>
         <br />
         <!-- <label for="Hotspots">Hotspots</label> -->
@@ -64,8 +190,8 @@
             <option value="Bowl">Bowl</option>
                 <option value="HotspotOff">HotspotOff</option>
         </select> -->
-        <br/>
-        
+        <br />
+
     </div>
     <script type="module">
         // Import the Dopple scripts so everything will work (need to update the generated SDK to reference "latest, not ")
@@ -151,7 +277,7 @@
 
         // Begin running the render loop
         dopple.run()
-        
+
         // tested adding the enable hotspots function as part of troubleshooting
         dopple.enableHotspots()
 
@@ -200,7 +326,7 @@
         console.log(hotspotElements);
         hotspotElements.forEach((el) => {
             const hotspotId = el.dataset.hotspotId;
-            dopple.matrix.hotspots[hotspotId].element = el; 
+            dopple.matrix.hotspots[hotspotId].element = el;
         });
 
         // Load selections to 3D Product
